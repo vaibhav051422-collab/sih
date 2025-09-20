@@ -1,0 +1,71 @@
+{
+  "sidebar": {
+    "community": "Community",
+    "my_issues": "My Issues",
+    "leaderboard": "Leaderboard",
+    "my_profile": "My Profile",
+    "logout": "Logout"
+  },
+  "header": {
+    "points": "Points",
+    "report_issue": "Report Issue"
+  },
+  "issue_card": {
+    "status_pending": "Pending",
+    "status_in_progress": "In Progress",
+    "status_resolved": "Resolved",
+    "voted": "Voted",
+    "upvote": "Upvote",
+    "issue_1_title": "Yamuna Riverbank Cleanup",
+    "issue_1_desc": "The riverbank is filled with plastic waste.",
+    "issue_2_title": "Pothole near Lajpat Nagar Market",
+    "issue_2_desc": "A large and dangerous pothole on the main road."
+  },
+  "tags": {
+    "cleanup": "Cleanup",
+    "river": "River",
+    "road": "Road",
+    "safety": "Safety"
+  },
+  "profile_page": {
+    "subtitle": "View your contributions and earned achievements.",
+    "contributor_title": "Community Contributor",
+    "achievements_title": "Achievements",
+    "achievements_soon": "Achievements feature coming soon!",
+    "not_found_title": "Profile Not Found",
+    "not_found_subtitle": "Could not find a profile associated with your account."
+  },
+  "report_issue_page": {
+    "title": "Report an Issue",
+    "subtitle": "Help us improve your community by reporting issues.",
+    "issue_title_label": "Issue Title",
+    "issue_title_placeholder": "e.g., Pothole on Main Street",
+    "description_label": "Description",
+    "description_placeholder": "Provide a detailed description of the issue.",
+    "location_label": "Location",
+    "location_placeholder": "e.g., Near City Park, Sector 12",
+    "tags_label": "Tags",
+    "tags_placeholder": "e.g., road, safety, garbage",
+    "photo_label": "Upload a Photo",
+    "submit_button": "Submit Report"
+  },
+  "signup_page": {
+    "title": "Create an Account",
+    "subtitle": "Join the community and start making a difference.",
+    "name_label": "Full Name",
+    "name_placeholder": "Enter your full name",
+    "email_label": "Email",
+    "email_placeholder": "Enter your email address",
+    "password_label": "Password",
+    "password_placeholder": "Create a strong password",
+    "submit_button": "Create Account",
+    "login_prompt": "Already have an account?",
+    "login_link": "Login"
+  },
+  "misc": {
+    "you": "You",
+    "loading": "Loading...",
+    "no_issues_title": "No Issues Found",
+    "no_issues_subtitle": "There are no issues in this category."
+  }
+}

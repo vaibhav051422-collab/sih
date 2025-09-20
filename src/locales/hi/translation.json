@@ -1,0 +1,40 @@
+{
+  "sidebar": {
+    "community": "समुदाय",
+    "my_issues": "मेरे मुद्दे",
+    "leaderboard": "लीडरबोर्ड",
+    "my_profile": "मेरी प्रोफाइल",
+    "logout": "लॉग आउट"
+  },
+  "header": {
+    "points": "अंक",
+    "report_issue": "मुद्दे की रिपोर्ट करें"
+  },
+  "community_page": {
+    "title": "समुदाय",
+    "subtitle": "समुदाय द्वारा रिपोर्ट किए गए मुद्दे ब्राउज़ करें।"
+  },
+  "my_issues_page": {
+    "title": "मेरे मुद्दे",
+    "subtitle": "आपके द्वारा रिपोर्ट किए गए सभी मुद्दों की सूची यहां है।"
+  },
+  "leaderboard_page": {
+    "title": "लीडरबोर्ड",
+    "subtitle": "देखें कि समुदाय में सबसे बड़ा प्रभाव कौन डाल रहा है।"
+  },
+  "profile_page": {
+    "title": "प्रोफाइल",
+    "subtitle": "अपने योगदान और अर्जित उपलब्धियों को देखें।",
+    "achievements_title": "उपलब्धियां",
+    "achievements_soon": "उपलब्धियां फीचर जल्द ही आ रहा है!"
+  },
+  "issue_card": {
+    "pending": "लंबित",
+    "in_progress": "प्रगति में",
+    "voted": "वोट दिया",
+    "upvote": "अपवोट"
+  },
+  "misc": {
+    "you": "आप"
+  }
+}
