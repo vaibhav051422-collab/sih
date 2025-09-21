@@ -562,10 +562,18 @@ export default function App() {
             if (!currentUserId) {
                 return [];
             }
-            const myIssues = issues.filter(issue => issue.user_id === currentUserId);
+            // Filter issues where user_id matches currentUserId (Siddhima's ID: user-3)
+            console.log('Filtering issues for user:', currentUserId);
+            const myIssues = issues.filter(issue => {
+                const isUsersIssue = issue.user_id === currentUserId;
+                console.log(`Issue ${issue.id} - ${issue.title}:`, isUsersIssue ? 'belongs to user' : 'not users');
+                return isUsersIssue;
+            });
+            console.log('Found user issues:', myIssues);
             return myIssues;
         }
         
+        // For community tab, show all issues sorted by upvotes
         return [...issues].sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
     };
 
@@ -587,7 +595,29 @@ export default function App() {
                         </div>
                     );
                 }
-                return (<div className="text-center py-16 px-6 bg-black/30 rounded-lg border border-blue-500/20 backdrop-blur-sm"><h3 className="text-xl font-semibold text-white">{t('misc.no_issues_title')}</h3><p className="text-gray-500 mt-2">{t('misc.no_issues_subtitle')}</p></div>);
+                return (
+                    <div className="text-center py-16 px-6 bg-black/30 rounded-lg border border-blue-500/20 backdrop-blur-sm">
+                        <h3 className="text-xl font-semibold text-white">
+                            {mainTab === 'my_issues' 
+                                ? t('misc.no_my_issues_title', 'No Issues Found')
+                                : t('misc.no_issues_title')}
+                        </h3>
+                        <p className="text-gray-500 mt-2">
+                            {mainTab === 'my_issues'
+                                ? t('misc.no_my_issues_subtitle', 'You haven\'t submitted any issues yet. Click the "Report Issue" button to get started!')
+                                : t('misc.no_issues_subtitle')}
+                        </p>
+                        {mainTab === 'my_issues' && (
+                            <button 
+                                onClick={() => { window.location.href = "/issue"; }} 
+                                className="mt-6 flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 mx-auto shadow-md shadow-blue-500/30 ring-1 ring-blue-500/50"
+                            >
+                                <PlusCircleIcon className="w-5 h-5" /> 
+                                {t('header.report_issue')}
+                            </button>
+                        )}
+                    </div>
+                );
             default: return null;
         }
     };
