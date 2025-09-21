@@ -5,6 +5,8 @@ import * as Utils from './utils';
 export const getIssues = Utils.getIssues;
 export const saveIssues = Utils.saveIssues;
 export const addNewIssue = Utils.addNewIssue;
+export const getVotes = Utils.getVotes;
+export const saveVotes = Utils.saveVotes;
 
 export const getFilteredIssues = (options?: {
     userId?: string;
@@ -15,12 +17,27 @@ export const getFilteredIssues = (options?: {
     
     if (!options) return issues;
     
-    return issues.filter(issue => {
+    // Filter issues based on provided options
+    const filteredIssues = issues.filter(issue => {
+        // User ID filter - exact match
         if (options.userId && issue.user_id !== options.userId) return false;
+        
+        // Status filter - exact match
         if (options.status && issue.status !== options.status) return false;
+        
+        // Location filter - case-insensitive partial match
         if (options.location && !issue.location?.toLowerCase().includes(options.location.toLowerCase())) return false;
+        
         return true;
     });
+
+    console.log('Filtered issues:', {
+        total: issues.length,
+        filtered: filteredIssues.length,
+        options
+    });
+
+    return filteredIssues;
 };
 
 export const getIssueStatistics = () => {
@@ -85,4 +102,27 @@ export const updateIssueStatus = (issueId: number, newStatus: 'pending' | 'in_pr
     saveIssues(issues);
     
     return issues[index];
+};
+
+export const upvoteIssue = (issueId: number, userId: string): boolean => {
+    const issues = getIssues();
+    const index = issues.findIndex(i => i.id === issueId);
+    
+    if (index === -1) return false;
+    
+    // Update issue upvotes
+    issues[index] = { 
+        ...issues[index], 
+        upvotes: (issues[index].upvotes || 0) + 1 
+    };
+    saveIssues(issues);
+    
+    // Get votes set
+    const votes = new Set(getVotes());
+    if (!votes.has(issueId)) {
+        votes.add(issueId);
+        saveVotes(Array.from(votes));
+    }
+    
+    return true;
 };

@@ -1,0 +1,174 @@
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import type { SVGProps } from 'react';
+
+// Types
+import type { Issue, User, AuthUser } from '../../types';
+import { AnimatedText } from "../ui/animated-underline-text-one";
+import { getUsers, saveUsers, getLoggedInUser, saveLoggedInUser, clearLoggedInUser, getVotes, getIssues, saveIssues, upvoteIssue } from '../../lib/utils';
+
+// Interface imports remain the same...
+
+export default function App() {
+    const { t } = useTranslation();
+    const [issues, setIssues] = useState<Issue[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
+    const [votedIssues, setVotedIssues] = useState<Set<number>>(new Set());
+    const [loading, setLoading] = useState(true);
+    const [mainTab, setMainTab] = useState('community');
+    const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+
+    const currentUserId = authUser?.id || "";
+    const currentUser = users.find(u => u.id === currentUserId);
+    const userPoints = currentUser?.points || 0;
+
+    useEffect(() => {
+        fetchLocalData();
+    }, []);
+
+    const fetchLocalData = async () => {
+        try {
+            setLoading(true);
+            
+            // Initialize users first
+            const existingUsers = getUsers();
+            setUsers(existingUsers);
+            
+            // Handle logged in user
+            const loggedInUser = getLoggedInUser();
+            if (loggedInUser) {
+                // Always use user-3 (Siddhima) as the demo user
+                const demoUser = existingUsers.find(u => u.id === 'user-3');
+                if (demoUser) {
+                    const updatedUser = {
+                        ...loggedInUser,
+                        id: demoUser.id,
+                        name: demoUser.name,
+                        points: demoUser.points
+                    };
+                    setAuthUser(updatedUser);
+                    saveLoggedInUser(updatedUser);
+                }
+            }
+
+            // Initialize issues
+            const currentIssues = getIssues();
+            setIssues(currentIssues);
+
+            // Initialize votes
+            const savedVotes = getVotes();
+            setVotedIssues(new Set(savedVotes));
+        } catch (error) {
+            console.error("Error fetching local data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleUpvote = (issueId: number) => {
+        if (!authUser || votedIssues.has(issueId)) return;
+
+        if (upvoteIssue(issueId)) {
+            // Update issues list
+            setIssues(getIssues());
+            
+            // Update voted issues set
+            setVotedIssues(new Set([...Array.from(votedIssues), issueId]));
+
+            // Update user points
+            const pointsToAward = 10;
+            setUsers(prevUsers => {
+                const updatedUsers = prevUsers.map(user => 
+                    user.id === currentUserId
+                        ? { ...user, points: user.points + pointsToAward }
+                        : user
+                );
+                saveUsers(updatedUsers);
+                return updatedUsers;
+            });
+        }
+    };
+
+    useEffect(() => {
+        const refreshIssues = async () => {
+            if (mainTab === 'my_issues' || mainTab === 'community') {
+                const allIssuesFromStorage = getIssues();
+                if (allIssuesFromStorage) {
+                    setIssues(allIssuesFromStorage);
+                }
+            }
+        };
+
+        refreshIssues();
+    }, [mainTab, currentUserId]);
+
+    const getDisplayedIssues = () => {
+        if (mainTab === 'my_issues') {
+            if (!currentUserId) return [];
+            return issues.filter(issue => issue.user_id === currentUserId);
+        }
+        return [...issues].sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
+    };
+
+    const displayedIssues = getDisplayedIssues();
+    const pageTitleKey = `sidebar.${mainTab}`;
+    const pageSubtitleKey = `${mainTab}_page.subtitle`;
+
+    const renderContent = () => {
+        if (loading) {
+            return <div className="text-center text-blue-400"><p>{t('misc.loading')}</p></div>;
+        }
+
+        switch (mainTab) {
+            case 'leaderboard':
+                return <LeaderboardPage users={users} currentUserId={currentUserId} />;
+            case 'profile':
+                return <ProfilePage user={currentUser || null} />;
+            case 'my_issues':
+            case 'community':
+                if (displayedIssues.length > 0) {
+                    return (
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                            {displayedIssues.map((issue) => (
+                                <IssueCard
+                                    key={issue.id}
+                                    issue={issue}
+                                    onUpvote={handleUpvote}
+                                    hasVoted={votedIssues.has(issue.id)}
+                                />
+                            ))}
+                        </div>
+                    );
+                }
+                return (
+                    <div className="text-center py-16 px-6 bg-black/30 rounded-lg border border-blue-500/20 backdrop-blur-sm">
+                        <h3 className="text-xl font-semibold text-white">{t('misc.no_issues_title')}</h3>
+                        <p className="text-gray-500 mt-2">{t('misc.no_issues_subtitle')}</p>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
+
+    return (
+        <div className="bg-black bg-grid-pattern min-h-screen text-gray-200 font-inter flex">
+            <div className="absolute inset-0 -z-10 h-full w-full bg-black bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            <Sidebar mainTab={mainTab} setMainTab={setMainTab} />
+            <div className="flex-1 flex flex-col h-screen">
+                <Header userPoints={userPoints} />
+                <main className="flex-1 overflow-y-auto p-8">
+                    <div className="text-left mb-8">
+                        <h2 className="text-4xl font-extrabold text-white tracking-tight title-glow">
+                            {t(pageTitleKey, {defaultValue: mainTab})}
+                        </h2>
+                        <p className="text-md text-gray-400 mt-2">
+                            {t(pageSubtitleKey, {defaultValue: ''})}
+                        </p>
+                    </div>
+                    {renderContent()}
+                </main>
+            </div>
+        </div>
+    );
+}

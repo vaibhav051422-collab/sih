@@ -27,6 +27,20 @@
     "road": "Road",
     "safety": "Safety"
   },
+  "ranks": {
+    "expert": "Expert Contributor",
+    "pro": "Pro Contributor",
+    "veteran": "Veteran Contributor",
+    "regular": "Regular Contributor",
+    "newcomer": "New Contributor"
+  },
+  "levels": {
+    "expert": "Community Expert",
+    "pro": "Community Pro",
+    "veteran": "Community Veteran",
+    "regular": "Regular Member",
+    "newcomer": "New Member"
+  },
   "profile_page": {
     "subtitle": "View your contributions and earned achievements.",
     "contributor_title": "Community Contributor",

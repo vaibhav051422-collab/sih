@@ -1,10 +1,62 @@
 // src/lib/localStorageHelpers.ts
+import type { User, AuthUser, Issue } from '../types';
 
-// A generic type for items that will be stored, ensuring they have an id.
-interface Storable {
-  id: number | string;
-  expiry?: number; // optional expiry timestamp
-}
+// Generic localStorage functions
+export const getFromLocalStorage = <T>(key: string): T | null => {
+    try {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+        console.error("Error reading from localStorage", error);
+        return null;
+    }
+};
+
+export const saveToLocalStorage = <T>(key: string, data: T): void => {
+    try {
+        localStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+        console.error("Error saving to localStorage", error);
+    }
+};
+export const getFromLocalStorage = (key: string) => {
+    try {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+        console.error("Error reading from localStorage", error);
+        return null;
+    }
+};
+
+export const saveToLocalStorage = (key: string, data: any) => {
+    try {
+        localStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+        console.error("Error saving to localStorage", error);
+    }
+};
+
+// User-related functions
+export const getUsers = (): User[] => getFromLocalStorage('civic_users') || [];
+export const saveUsers = (users: User[]) => saveToLocalStorage('civic_users', users);
+export const getLoggedInUser = (): AuthUser | null => getFromLocalStorage('civic_logged_in_user');
+export const saveLoggedInUser = (user: AuthUser) => saveToLocalStorage('civic_logged_in_user', user);
+export const clearLoggedInUser = () => localStorage.removeItem('civic_logged_in_user');
+
+// Issue-related functions
+export const getVotes = (): number[] => getFromLocalStorage('civic_voted_issues') || [];
+export const getIssues = (): Issue[] => getFromLocalStorage('civic_issues') || [];
+export const saveIssues = (issues: Issue[]) => saveToLocalStorage('civic_issues', issues);
+
+export const upvoteIssue = (issueId: number, userId: string): boolean => {
+    const issues = getIssues();
+    const issueToUpdate = issues.find((i: Issue) => i.id === issueId);
+    if (!issueToUpdate) return false;
+    issueToUpdate.upvotes = (issueToUpdate.upvotes || 0) + 1;
+    saveIssues(issues);
+    return true;
+};
 
 /**
  * Retrieves data from LocalStorage, parses it, and removes expired items.
