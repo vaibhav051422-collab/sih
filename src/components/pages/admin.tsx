@@ -4,7 +4,7 @@ import Analytics from "../ui/analytics";
 import { AnimatedText } from "../ui/animated-underline-text-one";
 import { ChartContainer } from '@mui/x-charts/ChartContainer';
 import { BarPlot } from '@mui/x-charts/BarChart';
-import { getLocationData, getStatusData, updateIssueStatus, getIssues } from "../../lib/issueHelpers";
+import { getLocationData, getStatusData, updateIssueStatus, getIssues, saveIssues } from "../../lib/issueHelpers";
 import type { Issue } from "../../types";
 
 // Using imported Issue type
@@ -435,11 +435,25 @@ export default function Dashboard() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex space-x-2">
-                            <button className="text-blue-400 hover:text-blue-300 text-xs">
+                            <button 
+                              onClick={() => window.location.href = `/issue/${issue.id}`}
+                              className="text-blue-400 hover:text-blue-300 text-xs px-3 py-1 rounded-full bg-blue-950/50"
+                            >
                               View
                             </button>
-                            <button className="text-green-400 hover:text-green-300 text-xs">
-                              Resolve
+                            <button 
+                              onClick={() => {
+                                updateIssueStatus(issue.id, 'resolved');
+                                fetchIssuesData(); // Refresh the data
+                              }}
+                              disabled={issue.status === 'resolved'}
+                              className={`text-xs px-3 py-1 rounded-full ${
+                                issue.status === 'resolved'
+                                  ? 'bg-green-900/30 text-green-700 cursor-not-allowed'
+                                  : 'bg-green-950/50 text-green-400 hover:text-green-300'
+                              }`}
+                            >
+                              {issue.status === 'resolved' ? 'Resolved' : 'Resolve'}
                             </button>
                           </div>
                         </td>

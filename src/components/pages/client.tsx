@@ -197,7 +197,18 @@ const IssueCard: React.FC<IssueCardProps> = ({ issue, onUpvote, hasVoted }) => {
         const key = `issue_card.status_${status}`;
         return t(key, { defaultValue: status });
     };
-    const getStatusColor = (status: Issue['status']) => ({ resolved: "bg-green-900/50 text-green-300", pending: "bg-yellow-900/50 text-yellow-300", in_progress: "bg-sky-900/50 text-sky-300" }[status || ""] || "bg-gray-900/50 text-gray-300");
+    const getStatusColor = (status: Issue['status']) => {
+        switch (status) {
+            case "resolved":
+                return "bg-green-900/50 text-green-300 border border-green-500/20";
+            case "pending":
+                return "bg-yellow-900/50 text-yellow-300 border border-yellow-500/20";
+            case "in_progress":
+                return "bg-sky-900/50 text-sky-300 border border-blue-500/20";
+            default:
+                return "bg-gray-900/50 text-gray-300 border border-gray-500/20";
+        }
+    };
     const [showPoints, setShowPoints] = useState(false);
     const [pointsText, setPointsText] = useState("");
 
@@ -217,7 +228,14 @@ const IssueCard: React.FC<IssueCardProps> = ({ issue, onUpvote, hasVoted }) => {
             <div className="p-6 flex flex-col flex-grow">
                 <div className="flex justify-between items-start mb-3">
                     <h3 className="text-xl font-bold text-gray-100 flex-1">{issue.title}</h3>
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(issue.status)} ml-2 shrink-0`}>{getStatusText(issue.status)}</span>
+                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(issue.status)} ml-2 shrink-0 flex items-center gap-2`}>
+                        {issue.status === 'resolved' && (
+                            <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                            </svg>
+                        )}
+                        {getStatusText(issue.status)}
+                    </span>
                 </div>
                 <div className="space-y-3 text-gray-400 text-sm mb-4">
                     <div className="flex items-center"><CalendarIcon className="h-4 w-4 mr-3 shrink-0" /><span>{formatDate(issue.created_at)}</span></div>
@@ -230,12 +248,15 @@ const IssueCard: React.FC<IssueCardProps> = ({ issue, onUpvote, hasVoted }) => {
                 <div className="mt-4 pt-4 border-t border-white/10 relative">
                     <button 
                         onClick={handleButtonClick} 
-                        disabled={hasVoted} 
+                        disabled={hasVoted || issue.status === 'resolved'} 
                         className={`
                             flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 text-sm font-semibold
-                            ${hasVoted 
-                                ? 'bg-green-500/20 text-green-400 cursor-not-allowed border border-green-500/50' 
-                                : 'bg-gradient-to-r from-blue-600/20 to-blue-500/20 text-blue-300 hover:from-blue-600 hover:to-blue-700 hover:text-white hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300'
+                            ${
+                                hasVoted
+                                    ? 'bg-green-500/20 text-green-400 cursor-not-allowed border border-green-500/50'
+                                    : issue.status === 'resolved'
+                                    ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed border border-gray-500/50'
+                                    : 'bg-gradient-to-r from-blue-600/20 to-blue-500/20 text-blue-300 hover:from-blue-600 hover:to-blue-700 hover:text-white hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300'
                             }
                         `}
                     >
@@ -448,28 +469,6 @@ export default function App() {
                 const initialMockIssues = [
                     { 
                         id: 1, 
-                        user_id: 'user-1', 
-                        title: "Smart Traffic Management System", 
-                        description: "Implementing AI-based traffic signals to reduce congestion and improve emergency vehicle response times.", 
-                        created_at: "2025-09-15T10:00:00Z", 
-                        location: "Connaught Place", 
-                        tags: "traffic,smart-city,technology", 
-                        upvotes: 156, 
-                        status: 'in_progress' as const 
-                    },
-                    { 
-                        id: 2, 
-                        user_id: 'user-2', 
-                        title: "Solar Powered Street Lights", 
-                        description: "Installation of solar-powered LED street lights to reduce electricity consumption and improve night visibility.", 
-                        created_at: "2025-09-14T15:30:00Z", 
-                        location: "Karol Bagh", 
-                        tags: "renewable-energy,infrastructure,sustainability", 
-                        upvotes: 89, 
-                        status: 'pending' as const 
-                    },
-                    { 
-                        id: 3, 
                         user_id: 'user-3', 
                         title: "Community Waste Management", 
                         description: "Setting up waste segregation and composting units in residential areas to promote sustainable waste management.", 
@@ -480,7 +479,7 @@ export default function App() {
                         status: 'in_progress' as const 
                     },
                     { 
-                        id: 4, 
+                        id: 2, 
                         user_id: 'user-3', 
                         title: "Urban Forest Initiative", 
                         description: "Creating mini forests in urban areas using Miyawaki technique to improve air quality and biodiversity.", 

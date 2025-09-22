@@ -1,0 +1,1 @@
+export const allLocations: { value: string; label: string }[];
